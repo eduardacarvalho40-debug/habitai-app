@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HabitAI ✦ suas metas, do seu jeito</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sky: #b8e4ff;
+  --sky2: #d6f0ff;
+  --sky3: #eef8ff;
+  --blue: #5ab4f0;
+  --blue2: #2e95e0;
+  --blue3: #1470b8;
+  --pink: #ffb3d9;
+  --pink2: #ff80c0;
+  --pink3: #ff4fa8;
+  --lilac: #d9c8ff;
+  --lilac2: #b89cff;
+  --mint: #b8f5e8;
+  --white: #ffffff;
+  --offwhite: #fafcff;
+  --dark: #1a2540;
+  --mid: #4a5a7a;
+  --soft: #8a9ab8;
+  --r: 20px;
+  --r-sm: 12px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--offwhite);
+  color: var(--dark);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.bg-wrap {
+  position: fixed; inset: 0; z-index: 0;
+  background: linear-gradient(160deg, #eef8ff 0%, #faf5ff 40%, #fff0f8 80%, #f0faff 100%);
+  overflow: hidden;
+}
+.bg-wrap::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(184,228,255,0.6) 0%, transparent 40%),
+    radial-gradient(circle at 85% 10%, rgba(255,179,217,0.4) 0%, transparent 35%),
+    radial-gradient(circle at 70% 80%, rgba(184,228,255,0.5) 0%, transparent 40%),
+    radial-gradient(circle at 10% 85%, rgba(217,200,255,0.4) 0%, transparent 35%);
+}
+.star { position: fixed; pointer-events: none; animation: twinkle var(--dur,3s) ease-in-out infinite; animation-delay: var(--del,0s); opacity: 0; font-size: var(--sz,14px); z-index: 0; }
+@keyframes twinkle { 0%,100%{opacity:0;transform:scale(0.5) rotate(0deg)} 50%{opacity:0.65;transform:scale(1) rotate(20deg)} }
+.wrap { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 0 16px 60px; }
+.header { text-align: center; padding: 36px 0 20px; }
+.logo-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: white; border: 2px solid var(--sky); border-radius: var(--r-pill);
+  padding: 8px 20px 8px 10px; margin-bottom: 22px;
+  box-shadow: 0 4px 20px rgba(90,180,240,0.18), inset 0 1px 0 rgba(255,255,255,0.9);
+}
+.logo-orb {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--pink2) 100%);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 16px; box-shadow: 0 2px 8px rgba(90,180,240,0.4);
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+.logo-name {
+  font-family: 'Pacifico', cursive; font-size: 18px;
+  background: linear-gradient(135deg, var(--blue2), var(--pink3));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-h1 {
+  font-family: 'Pacifico', cursive;
+  font-size: clamp(30px, 7vw, 44px); line-height: 1.15; margin-bottom: 10px;
+  background: linear-gradient(135deg, var(--blue2) 0%, var(--blue) 40%, var(--pink2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 2px 8px rgba(90,180,240,0.3));
+}
+.hero-sub { font-size: 15px; color: var(--soft); font-weight: 600; letter-spacing: 0.01em; }
+.hero-sub span { color: var(--pink3); }
+.tabs {
+  display: flex; gap: 4px; background: white; border-radius: var(--r-pill);
+  padding: 5px; margin: 24px 0 28px; border: 2px solid var(--sky2);
+  box-shadow: 0 4px 20px rgba(90,180,240,0.12), inset 0 1px 0 white;
+}
+.tab {
+  flex: 1; padding: 10px 4px; border: none; background: none; border-radius: var(--r-pill);
+  font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800;
+  color: var(--soft); cursor: pointer; transition: all 0.25s cubic-bezier(.4,0,.2,1);
+  white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 4px;
+}
+.tab.active {
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue2) 60%, var(--pink2) 140%);
+  color: white; box-shadow: 0 3px 14px rgba(90,180,240,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.tab:not(.active):hover { background: var(--sky3); color: var(--blue2); }
+.sec { display: none; }
+.sec.active { display: block; animation: popIn 0.3s cubic-bezier(.4,0,.2,1); }
+@keyframes popIn { from{opacity:0;transform:translateY(12px) scale(0.98)} to{opacity:1;transform:translateY(0) scale(1)} }
+.card {
+  background: white; border-radius: var(--r-xl); padding: 24px; margin-bottom: 16px;
+  border: 2px solid var(--sky2);
+  box-shadow: 0 4px 24px rgba(90,180,240,0.1), 0 1px 0 rgba(255,255,255,0.9) inset;
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--sky), var(--blue), var(--pink2), var(--lilac2));
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+}
+.card-h { font-weight: 900; font-size: 15px; color: var(--dark); margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+.jewel { width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--pink2)); box-shadow: 0 0 6px rgba(90,180,240,0.5); }
+label { font-size: 11px; font-weight: 800; color: var(--blue2); text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 7px; }
+input[type=text], textarea, select {
+  width: 100%; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 600;
+  color: var(--dark); background: var(--sky3); border: 2px solid var(--sky2);
+  border-radius: var(--r-sm); padding: 11px 14px; outline: none; transition: all 0.2s; -webkit-appearance: none;
+}
+input[type=text]:focus, textarea:focus, select:focus { border-color: var(--blue); background: white; box-shadow: 0 0 0 4px rgba(90,180,240,0.15); }
+textarea { resize: vertical; min-height: 88px; line-height: 1.6; }
+.field { margin-bottom: 15px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn { font-family: 'Nunito', sans-serif; font-weight: 800; border-radius: var(--r-pill); cursor: pointer; transition: all 0.2s cubic-bezier(.4,0,.2,1); border: none; font-size: 14px; padding: 12px 24px; display: inline-flex; align-items: center; gap: 7px; }
+.btn-primary { background: linear-gradient(135deg, var(--blue) 0%, var(--blue2) 60%, #5a7fff 100%); color: white; box-shadow: 0 4px 16px rgba(90,180,240,0.4), inset 0 1px 0 rgba(255,255,255,0.25); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(90,180,240,0.5); }
+.btn-primary:disabled { opacity: 0.5; transform: none; cursor: not-allowed; }
+.btn-soft { background: var(--sky3); color: var(--blue2); border: 2px solid var(--sky); font-size: 13px; }
+.btn-soft:hover { background: var(--sky2); border-color: var(--blue); }
+.btn-sm { padding: 7px 16px; font-size: 12px; }
+.btn-pink { background: linear-gradient(135deg, var(--pink2), var(--pink3)); color: white; box-shadow: 0 4px 16px rgba(255,128,192,0.35); }
+.btn-pink:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,128,192,0.45); }
+.ai-box { background: linear-gradient(135deg, var(--sky3), #fdf0ff); border: 2px solid var(--sky); border-radius: var(--r); padding: 20px 18px 16px; font-size: 14px; line-height: 1.8; font-weight: 600; color: var(--dark); white-space: pre-wrap; margin-top: 16px; position: relative; }
+.ai-badge { position: absolute; top: -11px; right: 16px; background: linear-gradient(135deg, var(--blue), var(--pink2)); color: white; font-size: 10px; font-weight: 800; padding: 3px 12px; border-radius: var(--r-pill); letter-spacing: 0.08em; text-transform: uppercase; }
+.loading-txt { color: var(--blue2); font-weight: 700; }
+.dot-anim::after { content: ''; animation: dots 1.2s infinite; }
+@keyframes dots { 0%{content:'✦'} 33%{content:'✦✦'} 66%{content:'✦✦✦'} }
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 10px; margin-bottom: 18px; }
+.cat-chip { border-radius: var(--r); padding: 16px 14px 13px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s cubic-bezier(.4,0,.2,1); position: relative; overflow: hidden; }
+.cat-chip::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, transparent 60%); pointer-events: none; }
+.cat-chip:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+.chip-icon { font-size: 28px; display: block; margin-bottom: 7px; }
+.chip-name { font-size: 12px; font-weight: 800; display: block; line-height: 1.3; }
+.chip-count { font-size: 11px; opacity: 0.65; font-weight: 600; margin-top: 3px; display: block; }
+.chip-acts { position: absolute; top: 8px; right: 8px; display: flex; gap: 2px; opacity: 0; transition: opacity 0.15s; }
+.cat-chip:hover .chip-acts { opacity: 1; }
+.chip-act { width: 22px; height: 22px; border-radius: 7px; background: rgba(255,255,255,0.65); border: none; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; transition: background 0.1s; }
+.chip-act:hover { background: rgba(255,255,255,0.9); }
+.habit-card { background: white; border-radius: var(--r-xl); padding: 20px 20px 18px; margin-bottom: 12px; border: 2px solid var(--sky2); box-shadow: 0 3px 16px rgba(90,180,240,0.08); transition: all 0.2s; position: relative; overflow: hidden; }
+.habit-card:hover { box-shadow: 0 8px 28px rgba(90,180,240,0.16); transform: translateY(-1px); }
+.accent-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; border-radius: var(--r-xl) 0 0 var(--r-xl); }
+.h-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.h-name { font-weight: 900; font-size: 15px; color: var(--dark); margin-bottom: 6px; padding-right: 8px; line-height: 1.3; }
+.h-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.tag { font-size: 11px; font-weight: 800; padding: 3px 11px; border-radius: var(--r-pill); }
+.h-mood { font-size: 24px; flex-shrink: 0; }
+.week { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; margin: 12px 0; }
+.wday { height: 30px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; background: var(--sky3); color: var(--soft); transition: all 0.2s; }
+.wday.full { background: linear-gradient(135deg, #a8f0c8, #6de8a8); color: #0f5e3a; }
+.wday.partial { background: linear-gradient(135deg, #ffe8a8, #ffd070); color: #7a5000; }
+.wday.missed { background: linear-gradient(135deg, #ffd0e0, #ffaacc); color: #8b1a3a; }
+.wday.today { outline: 2.5px solid var(--blue); outline-offset: 1px; }
+.prog-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--soft); margin-bottom: 6px; }
+.prog-track { height: 10px; background: var(--sky3); border-radius: var(--r-pill); overflow: hidden; border: 1.5px solid var(--sky2); }
+.prog-fill { height: 100%; border-radius: var(--r-pill); transition: width 0.6s cubic-bezier(.4,0,.2,1); }
+.pfg { background: linear-gradient(90deg, #6de8a8, #38d68a); }
+.pfa { background: linear-gradient(90deg, #ffd070, #ffb833); }
+.pfr { background: linear-gradient(90deg, #ffaacc, #ff5599); }
+.tasks { margin: 12px 0 0; border-top: 2px dashed var(--sky2); padding-top: 12px; }
+.task-row { display: flex; align-items: center; gap: 10px; padding: 5px 0; font-size: 13px; font-weight: 600; }
+.tcheck { width: 22px; height: 22px; border-radius: 7px; border: 2.5px solid var(--sky); cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; background: var(--sky3); }
+.tcheck.done { background: linear-gradient(135deg, var(--blue), var(--pink2)); border-color: transparent; box-shadow: 0 2px 8px rgba(90,180,240,0.4); }
+.tcheck.done::after { content: '✓'; color: white; font-size: 12px; font-weight: 900; }
+.ttext { flex: 1; }
+.ttext.struck { text-decoration: line-through; color: var(--soft); font-weight: 500; }
+.status-wrap { margin-top: 14px; border-top: 2px dashed var(--sky2); padding-top: 14px; }
+.status-lbl { font-size: 11px; font-weight: 900; color: var(--blue2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.status-lbl::before, .status-lbl::after { content: '✦'; font-size: 9px; color: var(--pink2); }
+.status-row { display: flex; gap: 8px; }
+.stt-btn { flex: 1; padding: 10px 6px; border-radius: var(--r-sm); border: 2.5px solid transparent; cursor: pointer; font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s cubic-bezier(.4,0,.2,1); }
+.stt-btn .si { font-size: 20px; }
+.sg { background: #edfff6; border-color: #a8f0c8; color: #0f5e3a; }
+.sg:hover,.sg.sel { background: #a8f0c8; border-color: #6de8a8; box-shadow: 0 0 0 3px rgba(109,232,168,0.25); transform: scale(1.03); }
+.sa { background: #fffbec; border-color: #ffe8a8; color: #7a5000; }
+.sa:hover,.sa.sel { background: #ffe8a8; border-color: #ffd070; box-shadow: 0 0 0 3px rgba(255,208,112,0.25); transform: scale(1.03); }
+.sr { background: #fff5f8; border-color: #ffd0e0; color: #8b1a3a; }
+.sr:hover,.sr.sel { background: #ffd0e0; border-color: #ffaacc; box-shadow: 0 0 0 3px rgba(255,170,204,0.25); transform: scale(1.03); }
+.acts { display: flex; gap: 7px; margin-top: 14px; flex-wrap: wrap; }
+.sugg-box { margin-top: 12px; background: linear-gradient(135deg, var(--sky3), #fff0fa); border: 2px solid var(--sky); border-radius: var(--r); padding: 14px 16px; font-size: 13px; line-height: 1.7; font-weight: 600; color: var(--dark); position: relative; }
+.sugg-title { font-size: 11px; font-weight: 900; color: var(--blue2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 7px; display: flex; align-items: center; gap: 5px; }
+.fpills { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 18px; }
+.fpill { padding: 6px 14px; border-radius: var(--r-pill); font-size: 12px; font-weight: 800; cursor: pointer; border: 2px solid var(--sky2); background: white; color: var(--soft); transition: all 0.2s; }
+.fpill:hover { border-color: var(--blue); color: var(--blue2); }
+.fpill.active { background: linear-gradient(135deg, var(--blue), var(--blue2)); color: white; border-color: transparent; box-shadow: 0 3px 10px rgba(90,180,240,0.35); }
+.sec-head { font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--blue2); margin: 20px 0 10px; display: flex; align-items: center; gap: 8px; }
+.sec-head::after { content: ''; flex: 1; height: 2px; background: linear-gradient(90deg, var(--sky2), transparent); border-radius: 1px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.stat { background: white; border-radius: var(--r); padding: 16px 12px; border: 2px solid var(--sky2); text-align: center; box-shadow: 0 2px 10px rgba(90,180,240,0.07); transition: transform 0.2s; }
+.stat:hover { transform: translateY(-2px); }
+.stat-n { font-family: 'Pacifico', cursive; font-size: 26px; background: linear-gradient(135deg, var(--blue2), var(--pink3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.stat-l { font-size: 11px; font-weight: 700; color: var(--soft); margin-top: 2px; }
+.overlay { position: fixed; inset: 0; background: rgba(26,37,64,0.45); backdrop-filter: blur(8px); z-index: 999; display: flex; align-items: center; justify-content: center; padding: 16px; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.modal { background: white; border-radius: var(--r-xl); padding: 28px; width: 100%; max-width: 380px; border: 2px solid var(--sky2); box-shadow: 0 24px 80px rgba(90,180,240,0.25); animation: slideUp 0.25s cubic-bezier(.4,0,.2,1); position: relative; overflow: hidden; }
+.modal::before { content: ''; position: absolute; top:0; left:0; right:0; height:4px; background: linear-gradient(90deg, var(--sky), var(--blue), var(--pink2), var(--lilac2)); }
+@keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+.modal h3 { font-weight: 900; font-size: 18px; color: var(--dark); margin-bottom: 20px; }
+.modal-acts { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+.egrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin: 8px 0 14px; }
+.eb { background: var(--sky3); border: 2.5px solid transparent; border-radius: 10px; font-size: 20px; cursor: pointer; padding: 4px; text-align: center; transition: all 0.15s; }
+.eb:hover { background: var(--sky2); transform: scale(1.1); }
+.eb.sel { border-color: var(--blue); background: var(--sky2); transform: scale(1.1); box-shadow: 0 0 0 2px rgba(90,180,240,0.3); }
+.crow { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 14px; }
+.cs { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.15s; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+.cs:hover { transform: scale(1.15); }
+.cs.sel { border-color: var(--dark); transform: scale(1.2); }
+.hist-entry { border-left: 4px solid; padding: 10px 14px; margin-bottom: 8px; background: var(--sky3); border-radius: 0 var(--r-sm) var(--r-sm) 0; }
+.hist-date { font-size: 11px; font-weight: 800; color: var(--blue2); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+.hist-text { font-size: 13px; font-weight: 600; line-height: 1.5; }
+.empty { text-align: center; padding: 48px 20px; color: var(--soft); font-size: 14px; font-weight: 700; line-height: 1.8; }
+.empty .ei { font-size: 52px; display: block; margin-bottom: 12px; animation: float 3s ease-in-out infinite; }
+@media(max-width:480px){.cat-grid{grid-template-columns:repeat(2,1fr)}.row2{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}.stat-n{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="bg-wrap"></div>
+<div id="stars-container" style="position:fixed;inset:0;z-index:0;pointer-events:none"></div>
+<div class="wrap">
+  <header class="header">
+    <div class="logo-pill">
+      <div class="logo-orb">💙</div>
+      <span class="logo-name">HabitAI</span>
+    </div>
+    <h1 class="hero-h1">suas metas,<br>do seu jeito ✨</h1>
+    <p class="hero-sub">com <span>IA</span> pra te guiar em cada passo 🌸</p>
+  </header>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('nova',this)">✦ Nova meta</button>
+    <button class="tab" onclick="showTab('hoje',this)">🌸 Hoje</button>
+    <button class="tab" onclick="showTab('dia',this)">⚡ Meu dia</button>
+    <button class="tab" onclick="showTab('cats',this)">🏷 Categorias</button>
+    <button class="tab" onclick="showTab('hist',this)">📊 Histórico</button>
+  </div>
+  <div id="tab-nova" class="sec active"></div>
+  <div id="tab-hoje" class="sec"></div>
+  <div id="tab-dia" class="sec"></div>
+  <div id="tab-cats" class="sec"></div>
+  <div id="tab-hist" class="sec"></div>
+  <div id="modal-root"></div>
+</div>
+<script>
+const sc=document.getElementById('stars-container');
+const starChars=['✦','✧','⋆','✿','♡','🌸','💧','✨','⭐'];
+for(let i=0;i<22;i++){
+  const s=document.createElement('div');s.className='star';
+  s.textContent=starChars[Math.floor(Math.random()*starChars.length)];
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${2+Math.random()*4}s;--del:${Math.random()*4}s;--sz:${10+Math.random()*12}px;`;
+  sc.appendChild(s);
+}
+const DEFAULT_CATS=[
+  {id:'saude',name:'Saúde & Corpo',icon:'💪',bg:'#d4f5e9',text:'#0f5e3a',border:'#6de8a8'},
+  {id:'financas',name:'Finanças',icon:'💰',bg:'#fff8d4',text:'#7a5000',border:'#ffd070'},
+  {id:'carreira',name:'Carreira',icon:'🚀',bg:'#d6eeff',text:'#0057a0',border:'#80c8ff'},
+  {id:'relac',name:'Relacionamentos',icon:'💕',bg:'#ffe0ef',text:'#8b0045',border:'#ffaacc'},
+  {id:'mente',name:'Mente & Estudo',icon:'📚',bg:'#ede0ff',text:'#4a35a8',border:'#c8aaff'},
+  {id:'espirit',name:'Espiritualidade',icon:'🙏',bg:'#d8f5f2',text:'#0a5e58',border:'#70e8d8'},
+];
+const COLOR_OPTS=[
+  {bg:'#d4f5e9',text:'#0f5e3a',border:'#6de8a8'},{bg:'#fff8d4',text:'#7a5000',border:'#ffd070'},
+  {bg:'#d6eeff',text:'#0057a0',border:'#80c8ff'},{bg:'#ffe0ef',text:'#8b0045',border:'#ffaacc'},
+  {bg:'#ede0ff',text:'#4a35a8',border:'#c8aaff'},{bg:'#d8f5f2',text:'#0a5e58',border:'#70e8d8'},
+  {bg:'#fff0e0',text:'#7a3800',border:'#ffbb77'},{bg:'#f0f0f8',text:'#444460',border:'#c0c0e0'},
+];
+const EMOJIS=['💪','💰','🚀','💕','📚','🙏','🧘','🎯','🏃','🥗','💡','🌱','🎨','🎵','🌍','🏠','👨‍👩‍👧','🤝','📈','🧠','⚡','🔥','🌸','🎓','🐾','🎮','🍵','💻','🌙','☀️','🦋','🌈'];
+let S=JSON.parse(localStorage.getItem('habitai_girly')||'null')||{habits:[],cats:JSON.parse(JSON.stringify(DEFAULT_CATS)),filterCat:'all',plan:null,meta:null};
+const save=()=>localStorage.setItem('habitai_girly',JSON.stringify(S));
+let _ee='🎯',_selCI=0;
+function showTab(t,el){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  if(el)el.classList.add('active');
+  if(t==='nova')renderNova();if(t==='hoje')renderHoje();if(t==='dia')renderDia();if(t==='cats')renderCats();if(t==='hist')renderHist();
+}
+function renderNova(){
+  const opts=S.cats.map(c=>`<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+  document.getElementById('tab-nova').innerHTML=`
+  <div class="card">
+    <div class="card-h"><div class="jewel"></div> Cria sua meta aqui ✨</div>
+    <div class="field"><label>Categoria</label><select id="n-cat">${opts}</select></div>
+    <div class="field"><label>Descreva sua meta com suas palavras 💬</label>
+    <textarea id="n-desc" placeholder="Ex: Quero emagrecer 8kg até o verão, malhar 4x e tomar 2L de água 💧&#10;Ex: Ler 1 livro por mês esse ano 📚&#10;Ex: Guardar R$500 por mês nos próximos 6 meses 💰"></textarea></div>
+    <div class="row2">
+      <div class="field" style="margin-bottom:0"><label>Prazo ⏰</label><select id="n-prazo"><option>1 semana</option><option>2 semanas</option><option selected>1 mês</option><option>2 meses</option><option>3 meses</option><option>6 meses</option><option>1 ano</option></select></div>
+      <div class="field" style="margin-bottom:0"><label>Comprometimento 💪</label><select id="n-nivel"><option value="leve">Leve (2-3x/semana)</option><option value="moderado" selected>Moderado (5x/semana)</option><option value="intenso">Intenso (todo dia)</option></select></div>
+    </div>
+    <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary" id="btn-gerar" onclick="gerarPlano()">✨ Gerar plano com IA</button>
+    </div>
+    <div id="plano-result" style="display:none">
+      <div class="ai-box" id="plano-txt"><div class="ai-badge">✦ IA</div></div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="salvarPlano()">💾 Salvar plano</button>
+        <button class="btn btn-soft btn-sm" onclick="gerarPlano()">↺ Gerar outro</button>
+      </div>
+    </div>
+  </div>`;
+}
+async function gerarPlano(){
+  const desc=document.getElementById('n-desc').value.trim();
+  if(!desc){alert('Descreva sua meta primeiro! 💕');return;}
+  const prazo=document.getElementById('n-prazo').value;
+  const nivel=document.getElementById('n-nivel').value;
+  const catId=document.getElementById('n-cat').value;
+  S.meta={desc,prazo,nivel,catId};
+  const btn=document.getElementById('btn-gerar');
+  btn.disabled=true;btn.textContent='Criando...';
+  document.getElementById('plano-result').style.display='block';
+  document.getElementById('plano-txt').innerHTML='<div class="ai-badge">✦ IA</div><span class="loading-txt"><span class="dot-anim">Criando seu plano personalizado</span></span>';
+  const prompt=`Você é um coach especialista em hábitos e metas. A usuária quer atingir:\n\n"${desc}"\n\nPrazo: ${prazo} | Nível: ${nivel}\n\nCrie um plano estruturado em português com:\n1. **Resumo da meta** (1-2 frases)\n2. **Meta semanal**\n3. **Tarefas diárias** (3-5 hábitos concretos e mensuráveis)\n4. **Indicador de sucesso**\n5. **Dica motivacional** (curta)\n\nSeja específico, prático e encorajador. Tom amigável e positivo.`;
+  try{
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    const txt=d.content?.[0]?.text||'Erro ao gerar.';
+    document.getElementById('plano-txt').innerHTML=`<div class="ai-badge">✦ IA</div>${txt}`;
+    S.plan=txt;
+  }catch(e){document.getElementById('plano-txt').innerHTML='<div class="ai-badge">✦ IA</div>Erro de conexão. Tenta de novo? 💙';}
+  btn.disabled=false;btn.innerHTML='✨ Gerar plano com IA';
+}
+function extrairTarefas(txt){
+  const ls=txt.split('\n');const t=[];let em=false;
+  for(const l of ls){
+    if(l.includes('diárias')||l.includes('Tarefas'))em=true;
+    if(em&&/^[-•*\d]/.test(l)){const s=l.replace(/^[-•*\d\.]+\s*/,'').replace(/\*\*/g,'').trim();if(s.length>5&&t.length<5)t.push(s);}
+    if(em&&t.length>0&&/^\*\*[^T]/.test(l))break;
+  }
+  if(!t.length){const m=txt.match(/[-•]\s*([^\n]{10,80})/g)||[];m.slice(0,5).forEach(x=>t.push(x.replace(/^[-•]\s*/,'').trim()));}
+  return t.length?t:['Completar atividade principal','Registrar progresso','Revisar a meta'];
+}
+function salvarPlano(){
+  if(!S.plan||!S.meta)return;
+  const cat=S.cats.find(c=>c.id===S.meta.catId)||S.cats[0];
+  S.habits.push({id:Date.now(),titulo:S.meta.desc.substring(0,65)+(S.meta.desc.length>65?'…':''),prazo:S.meta.prazo,nivel:S.meta.nivel,catId:cat.id,plano:S.plan,tarefas:extrairTarefas(S.plan).map(t=>({t,f:false})),criado:new Date().toISOString(),hist:[],statusHoje:null});
+  save();S.plan=null;S.meta=null;
+  alert('💙 Meta criada! Veja na aba "Hoje" 🌸');
+  renderNova();
+}
+function renderHoje(){
+  const el=document.getElementById('tab-hoje');
+  if(!S.habits.length){el.innerHTML='<div class="empty"><span class="ei">🌸</span>Nenhuma meta ainda!<br>Crie sua primeira na aba <strong>✦ Nova meta</strong> 💕</div>';return;}
+  const concl=S.habits.filter(h=>h.statusHoje==='full').length;
+  const regHj=S.habits.filter(h=>(h.hist||[]).some(e=>new Date(e.data).toDateString()===new Date().toDateString())).length;
+  const catAtivas=[...new Set(S.habits.map(h=>h.catId))];
+  const pills=`<button class="fpill ${S.filterCat==='all'?'active':''}" onclick="setFC('all')">Todas 💙</button>`+catAtivas.map(cid=>{const c=S.cats.find(x=>x.id===cid)||{id:cid,name:cid,icon:'📌'};return `<button class="fpill ${S.filterCat===cid?'active':''}" onclick="setFC('${cid}')">${c.icon} ${c.name}</button>`;}).join('');
+  const filtered=S.filterCat==='all'?S.habits:S.habits.filter(h=>h.catId===S.filterCat);
+  const grouped={};
+  filtered.forEach(h=>{if(!grouped[h.catId])grouped[h.catId]=[];grouped[h.catId].push(h);});
+  let html=`<div class="stats"><div class="stat"><div class="stat-n">${S.habits.length}</div><div class="stat-l">Metas ativas</div></div><div class="stat"><div class="stat-n">${concl}</div><div class="stat-l">Concluídas hoje</div></div><div class="stat"><div class="stat-n">${regHj}</div><div class="stat-l">Registradas</div></div></div><div class="fpills">${pills}</div>`;
+  Object.entries(grouped).forEach(([cid,habits])=>{const cat=S.cats.find(c=>c.id===cid)||{name:cid,icon:'📌'};html+=`<div class="sec-head">${cat.icon} ${cat.name}</div>`;habits.forEach(h=>{html+=cardHtml(h);});});
+  if(!Object.keys(grouped).length)html+='<div class="empty"><span class="ei">🔍</span>Nenhuma meta nessa categoria.</div>';
+  el.innerHTML=html;
+}
+function setFC(cid){S.filterCat=cid;save();renderHoje();}
+function cardHtml(h){
+  const hi=S.habits.indexOf(h);
+  const cat=S.cats.find(c=>c.id===h.catId)||{bg:'#f0f0f8',text:'#444',border:'#ccc',icon:'📌',name:h.catId};
+  const feitas=h.tarefas.filter(t=>t.f).length;
+  const pct=h.tarefas.length?Math.round(feitas/h.tarefas.length*100):0;
+  const pc=pct>=80?'pfg':pct>=40?'pfa':'pfr';
+  const mood=pct>=80?'🔥':pct>=40?'⚡':'🌱';
+  const dias=['D','S','T','Q','Q','S','S'];
+  const diaAtual=new Date().getDay();
+  const semana=dias.map((d,di)=>{const e=(h.hist||[]).find(x=>{const xd=new Date(x.data);return xd>=getWS()&&xd.getDay()===di;});let cls=di===diaAtual?'today':'';if(e)cls+=' '+(e.status==='full'?'full':e.status==='partial'?'partial':'missed');const lbl=e?(e.status==='full'?'✓':e.status==='partial'?'~':'✗'):d;return `<div class="wday ${cls}">${lbl}</div>`;}).join('');
+  const tarefas=h.tarefas.map((t,ti)=>`<div class="task-row"><div class="tcheck ${t.f?'done':''}" onclick="toggleT(${hi},${ti})"></div><span class="ttext ${t.f?'struck':''}">${t.t}</span></div>`).join('');
+  const s=h.statusHoje;
+  return `<div class="habit-card">
+    <div class="accent-bar" style="background:linear-gradient(180deg,${cat.border},${cat.bg})"></div>
+    <div class="h-top"><div style="flex:1"><div class="h-name">${h.titulo}</div><div class="h-tags"><span class="tag" style="background:${cat.bg};color:${cat.text}">${cat.icon} ${cat.name}</span><span class="tag" style="background:var(--sky2);color:var(--blue2)">${h.prazo}</span></div></div><div class="h-mood">${mood}</div></div>
+    <div class="week">${semana}</div>
+    <div class="prog-label"><span>Progresso hoje</span><span>${feitas}/${h.tarefas.length} · ${pct}%</span></div>
+    <div class="prog-track"><div class="prog-fill ${pc}" style="width:${pct}%"></div></div>
+    <div class="tasks">${tarefas}</div>
+    <div class="status-wrap">
+      <div class="status-lbl">Como foi seu dia?</div>
+      <div class="status-row">
+        <button class="stt-btn sg ${s==='full'?'sel':''}" onclick="setSt(${hi},'full')"><span class="si">🎯</span>100%</button>
+        <button class="stt-btn sa ${s==='partial'?'sel':''}" onclick="setSt(${hi},'partial')"><span class="si">🌤</span>Mais ou menos</button>
+        <button class="stt-btn sr ${s==='missed'?'sel':''}" onclick="setSt(${hi},'missed')"><span class="si">🥱</span>Não consegui</button>
+      </div>
+    </div>
+    <div class="acts">
+      <button class="btn btn-soft btn-sm" onclick="registrar(${hi})">💾 Salvar dia</button>
+      <button class="btn btn-soft btn-sm" onclick="sugestaoIA(${hi})">✨ Sugestão IA</button>
+      <button class="btn btn-soft btn-sm" onclick="editarH(${hi})">✏️</button>
+      <button class="btn btn-soft btn-sm" onclick="remover(${hi})" style="color:#cc4466">🗑</button>
+    </div>
+    <div id="s-${hi}" style="display:none"></div>
+  </div>`;
+}
+function toggleT(hi,ti){S.habits[hi].tarefas[ti].f=!S.habits[hi].tarefas[ti].f;save();renderHoje();}
+function setSt(hi,s){S.habits[hi].statusHoje=s;save();renderHoje();}
+function registrar(hi){
+  const h=S.habits[hi];const feitas=h.tarefas.filter(t=>t.f).length;const pct=Math.round(feitas/h.tarefas.length*100);
+  const status=h.statusHoje||(pct>=80?'full':pct>=40?'partial':'missed');
+  if(!h.hist)h.hist=[];
+  h.hist.push({data:new Date().toISOString(),pct,feitas,total:h.tarefas.length,status});
+  h.tarefas=h.tarefas.map(t=>({...t,f:false}));h.statusHoje=null;save();renderHoje();
+}
+async function sugestaoIA(hi){
+  const h=S.habits[hi];const box=document.getElementById('s-'+hi);
+  box.style.display='block';
+  box.innerHTML='<div class="sugg-box"><span class="loading-txt dot-anim">Analisando seu progresso</span></div>';
+  const ult=(h.hist||[]).slice(-7);const media=ult.length?Math.round(ult.reduce((a,b)=>a+b.pct,0)/ult.length):0;
+  const prompt=`Coach de hábitos. Meta: "${h.titulo}" (${h.prazo}, ${h.nivel})\nÚltimos ${ult.length} dias: ${JSON.stringify(ult.map(e=>({pct:e.pct,status:e.status})))}\nMédia: ${media}%\n\nDê uma sugestão curta (máx 4 frases) em português, tom amigável. Se bem, celebre! Se baixo, sugira ajuste gentil.`;
+  try{
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    box.innerHTML=`<div class="sugg-box"><div class="sugg-title">✨ Sugestão da IA</div>${d.content?.[0]?.text||'Erro.'}</div>`;
+  }catch(e){box.innerHTML='<div class="sugg-box">Erro de conexão 💙</div>';}
+}
+function remover(hi){if(confirm('Remover essa meta? 🥺')){S.habits.splice(hi,1);save();renderHoje();}}
+function editarH(hi){
+  const h=S.habits[hi];const opts=S.cats.map(c=>`<option value="${c.id}" ${c.id===h.catId?'selected':''}>${c.icon} ${c.name}</option>`).join('');
+  const prazos=['1 semana','2 semanas','1 mês','2 meses','3 meses','6 meses','1 ano'];
+  document.getElementById('modal-root').innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><h3>✏️ Editar meta</h3><div class="field"><label>Título</label><input type="text" id="e-t" value="${h.titulo}"></div><div class="field"><label>Categoria</label><select id="e-c">${opts}</select></div><div class="field"><label>Prazo</label><select id="e-p">${prazos.map(p=>`<option ${h.prazo===p?'selected':''}>${p}</option>`).join('')}</select></div><div class="modal-acts"><button class="btn btn-soft btn-sm" onclick="closeModal()">Cancelar</button><button class="btn btn-primary btn-sm" onclick="saveEditH(${hi})">💾 Salvar</button></div></div></div>`;
+}
+function saveEditH(hi){S.habits[hi].titulo=document.getElementById('e-t').value.trim();S.habits[hi].catId=document.getElementById('e-c').value;S.habits[hi].prazo=document.getElementById('e-p').value;save();closeModal();renderHoje();}
+function renderCats(){
+  const chips=S.cats.map((c,ci)=>{const cnt=S.habits.filter(h=>h.catId===c.id).length;return `<div class="cat-chip" style="background:${c.bg};color:${c.text};border-color:${c.border}"><div class="chip-acts"><button class="chip-act" onclick="editCat(${ci})">✏️</button><button class="chip-act" onclick="delCat(${ci})">🗑</button></div><span class="chip-icon">${c.icon}</span><span class="chip-name">${c.name}</span><span class="chip-count">${cnt} meta${cnt!==1?'s':''}</span></div>`;}).join('');
+  document.getElementById('tab-cats').innerHTML=`<div class="card"><div class="card-h"><div class="jewel"></div> Minhas categorias de vida ✨</div><div class="cat-grid">${chips}</div><button class="btn btn-pink btn-sm" onclick="novaCat()">+ Nova categoria 💕</button></div><p style="font-size:12px;color:var(--soft);text-align:center;margin-top:8px;font-weight:600">Passe o mouse para editar ou excluir 🌸</p>`;
+}
+function openCatModal(ci,c){
+  _ee=c?c.icon:'🎯';const selC=c?COLOR_OPTS.findIndex(o=>o.bg===c.bg):0;_selCI=selC>=0?selC:0;
+  const eGrid=EMOJIS.map(e=>`<button class="eb ${e===_ee?'sel':''}" onclick="pickEmoji('${e}',this)">${e}</button>`).join('');
+  const cGrid=COLOR_OPTS.map((o,i)=>`<div class="cs ${i===_selCI?'sel':''}" style="background:${o.bg};border-color:${i===_selCI?'var(--dark)':'transparent'}" onclick="pickColor(${i},this)"></div>`).join('');
+  document.getElementById('modal-root').innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><h3>${c?'✏️ Editar':'✦ Nova'} categoria</h3><div class="field"><label>Nome</label><input type="text" id="cn" value="${c?c.name:''}" placeholder="Ex: Hobbies, Viagens..."></div><div class="field"><label>Ícone 💕</label><div class="egrid">${eGrid}</div></div><div class="field"><label>Cor 🎨</label><div class="crow">${cGrid}</div></div><div class="modal-acts"><button class="btn btn-soft btn-sm" onclick="closeModal()">Cancelar</button><button class="btn btn-primary btn-sm" onclick="saveCat(${ci})">${c?'💾 Salvar':'✨ Criar'}</button></div></div></div>`;
+}
+function novaCat(){openCatModal(-1,null);}
+function editCat(ci){openCatModal(ci,S.cats[ci]);}
+function pickEmoji(e,el){_ee=e;document.querySelectorAll('.eb').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
+function pickColor(i,el){_selCI=i;document.querySelectorAll('.cs').forEach((s,idx)=>{s.classList.toggle('sel',idx===i);s.style.borderColor=idx===i?'var(--dark)':'transparent';});}
+function saveCat(ci){
+  const nome=document.getElementById('cn').value.trim();if(!nome)return;
+  const col=COLOR_OPTS[_selCI||0];
+  const nc={id:ci>=0?S.cats[ci].id:'cat_'+Date.now(),name:nome,icon:_ee,bg:col.bg,text:col.text,border:col.border};
+  if(ci>=0)S.cats[ci]=nc;else S.cats.push(nc);
+  save();closeModal();renderCats();
+}
+function delCat(ci){const c=S.cats[ci];const n=S.habits.filter(h=>h.catId===c.id).length;if(confirm(`Excluir "${c.name}"? 🥺${n>0?' As '+n+' metas ficarão sem categoria.':''}`)){S.cats.splice(ci,1);save();renderCats();}}
+function renderHist(){
+  const el=document.getElementById('tab-hist');
+  if(!S.habits.length){el.innerHTML='<div class="empty"><span class="ei">📊</span>Nenhum histórico ainda.<br>Registre seus dias na aba "Hoje" 🌸</div>';return;}
+  let html='';
+  S.habits.forEach(h=>{
+    if(!(h.hist||[]).length)return;
+    const cat=S.cats.find(c=>c.id===h.catId)||{icon:'📌',name:h.catId,bg:'#f0f0f8',text:'#444',border:'#ccc'};
+    const media=Math.round(h.hist.reduce((a,b)=>a+b.pct,0)/h.hist.length);
+    const pc=media>=80?'pfg':media>=40?'pfa':'pfr';
+    html+=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px"><div><div style="font-weight:900;font-size:15px;margin-bottom:7px">${h.titulo}</div><span class="tag" style="background:${cat.bg};color:${cat.text}">${cat.icon} ${cat.name}</span></div><div style="text-align:right"><div style="font-family:Pacifico,cursive;font-size:24px;background:linear-gradient(135deg,var(--blue2),var(--pink3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${media}%</div><div style="font-size:11px;font-weight:700;color:var(--soft)">${h.hist.length} dias</div></div></div><div class="prog-track" style="margin-bottom:14px"><div class="prog-fill ${pc}" style="width:${media}%"></div></div>${h.hist.slice().reverse().slice(0,8).map(e=>{const d=new Date(e.data).toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});const bc=e.status==='full'?'#6de8a8':e.status==='partial'?'#ffd070':'#ffaacc';const lbl=e.status==='full'?'🎯 Completado':e.status==='partial'?'🌤 Mais ou menos':'🥱 Não consegui';return `<div class="hist-entry" style="border-left-color:${bc}"><div class="hist-date">${d}</div><div class="hist-text">${lbl} · ${e.feitas}/${e.total} tarefas (${e.pct}%)</div></div>`;}).join('')}</div>`;
+  });
+  el.innerHTML=html||'<div class="empty"><span class="ei">📅</span>Registre dias na aba "Hoje" 💕</div>';
+}
+function getWS(){const d=new Date();d.setDate(d.getDate()-d.getDay());d.setHours(0,0,0,0);return d;}
+function closeModal(){document.getElementById('modal-root').innerHTML='';}
+
+// ── MEU DIA ───────────────────────────────────────────
+// Daily planner state lives inside S.dia
+if(!S.dia) S.dia = { entries: [] };
+
+function renderDia() {
+  const el = document.getElementById('tab-dia');
+  const hoje = new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
+  el.innerHTML = `
+  <div class="card">
+    <div class="card-h"><div class="jewel"></div> Organizar meu dia ⚡</div>
+    <p style="font-size:13px;color:var(--soft);font-weight:600;margin-bottom:16px;margin-top:-8px">${hoje}</p>
+
+    <div class="field">
+      <label>Compromissos fixos de hoje 📅</label>
+      <textarea id="d-fixos" placeholder="Ex: Reunião com cliente às 10h&#10;Almoço com equipe às 12h&#10;Call de consultoria às 15h" style="min-height:72px"></textarea>
+    </div>
+    <div class="field">
+      <label>Pendências em aberto 📋</label>
+      <textarea id="d-pendencias" placeholder="Ex: Responder proposta cliente X&#10;Finalizar dashboard Power BI&#10;Enviar relatório semana" style="min-height:72px"></textarea>
+    </div>
+    <div class="field">
+      <label>Projetos ativos de consultoria 🚀</label>
+      <textarea id="d-projetos" placeholder="Ex: Cliente ABC — aguardando aprovação&#10;Cliente XYZ — em execução mapeamento" style="min-height:72px"></textarea>
+    </div>
+    <div class="field">
+      <label>Nível de energia hoje ⚡ (1 a 5)</label>
+      <div style="display:flex;gap:8px;margin-top:2px" id="energia-btns">
+        ${[1,2,3,4,5].map(n=>`<button onclick="setEnergia(${n})" id="en-${n}" style="flex:1;padding:10px 4px;border-radius:var(--r-sm);border:2px solid var(--sky2);background:var(--sky3);font-family:Nunito,sans-serif;font-weight:800;font-size:15px;cursor:pointer;transition:all 0.2s;color:var(--soft)">${n}</button>`).join('')}
+      </div>
+    </div>
+    <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary" id="btn-briefing" onclick="gerarBriefing()">⚡ Gerar briefing do dia</button>
+    </div>
+    <div id="briefing-result" style="display:none">
+      <div class="ai-box" id="briefing-txt"><div class="ai-badge">✦ IA</div></div>
+      <div style="margin-top:14px" id="checklist-area"></div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="salvarDia()">💾 Salvar no histórico</button>
+        <button class="btn btn-soft btn-sm" onclick="gerarBriefing()">↺ Gerar novamente</button>
+      </div>
+    </div>
+  </div>`;
+  window._energia = 3;
+  setEnergia(3);
+}
+
+function setEnergia(n) {
+  window._energia = n;
+  [1,2,3,4,5].forEach(i => {
+    const btn = document.getElementById('en-'+i);
+    if (!btn) return;
+    if (i <= n) {
+      btn.style.background = 'linear-gradient(135deg,var(--blue),var(--blue2))';
+      btn.style.borderColor = 'var(--blue2)';
+      btn.style.color = 'white';
+    } else {
+      btn.style.background = 'var(--sky3)';
+      btn.style.borderColor = 'var(--sky2)';
+      btn.style.color = 'var(--soft)';
+    }
+  });
+}
+
+async function gerarBriefing() {
+  const fixos = document.getElementById('d-fixos').value.trim();
+  const pendencias = document.getElementById('d-pendencias').value.trim();
+  const projetos = document.getElementById('d-projetos').value.trim();
+  const energia = window._energia || 3;
+  if (!fixos && !pendencias && !projetos) { alert('Preencha pelo menos um campo para eu montar seu briefing 💕'); return; }
+
+  const btn = document.getElementById('btn-briefing');
+  btn.disabled = true; btn.textContent = 'Criando briefing...';
+  document.getElementById('briefing-result').style.display = 'block';
+  document.getElementById('briefing-txt').innerHTML = '<div class="ai-badge">✦ IA</div><span class="loading-txt"><span class="dot-anim">Organizando seu dia</span></span>';
+  document.getElementById('checklist-area').innerHTML = '';
+
+  const hoje = new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  const prompt = `Você é meu assistente de produtividade pessoal. Vou te dar o contexto do meu dia e você vai me entregar um briefing executivo.
+
+Data: ${hoje}
+Compromissos fixos de hoje: ${fixos || 'Nenhum informado'}
+Pendências em aberto: ${pendencias || 'Nenhuma informada'}
+Projetos ativos de consultoria: ${projetos || 'Nenhum informado'}
+Energia hoje (1 a 5): ${energia}
+
+Me entregue:
+1. **Prioridade #1 do dia** (1 única tarefa mais importante)
+2. **Bloco de foco sugerido** (horário e duração)
+3. **O que pode ser delegado ou adiado** sem impacto
+4. **Uma pergunta provocadora** para eu não perder o fio estratégico do mês
+
+Seja direta, executiva e motivadora. Adapte ao nível de energia informado.`;
+
+  try {
+    const r = await fetch('/api/chat', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ messages: [{role:'user',content:prompt}], max_tokens: 800 })
+    });
+    const d = await r.json();
+    const txt = d.content?.[0]?.text || 'Erro ao gerar.';
+    document.getElementById('briefing-txt').innerHTML = `<div class="ai-badge">✦ IA</div>${txt}`;
+    window._briefingTxt = txt;
+
+    // Build checklist from all tasks mentioned
+    const allTasks = [];
+    if (fixos) fixos.split('\n').filter(l=>l.trim()).forEach(t => allTasks.push({t:t.trim(), tipo:'fixo'}));
+    if (pendencias) pendencias.split('\n').filter(l=>l.trim()).forEach(t => allTasks.push({t:t.trim(), tipo:'pendencia'}));
+    window._checklistTasks = allTasks.map(t => ({...t, done: false}));
+    renderChecklist();
+  } catch(e) {
+    document.getElementById('briefing-txt').innerHTML = '<div class="ai-badge">✦ IA</div>Erro de conexão. Tenta de novo? 💙';
+  }
+  btn.disabled = false; btn.innerHTML = '⚡ Gerar briefing do dia';
+}
+
+function renderChecklist() {
+  const tasks = window._checklistTasks || [];
+  if (!tasks.length) return;
+  const doneCnt = tasks.filter(t=>t.done).length;
+  const pct = Math.round(doneCnt/tasks.length*100);
+  const pc = pct>=80?'pfg':pct>=40?'pfa':'pfr';
+  const tipoLabel = {fixo:'📅 Compromisso', pendencia:'📋 Pendência'};
+
+  document.getElementById('checklist-area').innerHTML = `
+  <div class="card" style="margin-top:0;padding:18px 20px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="card-h" style="margin-bottom:0"><div class="jewel"></div> Checklist do dia</div>
+      <span style="font-size:12px;font-weight:800;color:var(--blue2)">${doneCnt}/${tasks.length} · ${pct}%</span>
+    </div>
+    <div class="prog-track" style="margin-bottom:14px"><div class="prog-fill ${pc}" style="width:${pct}%"></div></div>
+    ${tasks.map((t,i) => `
+    <div class="task-row">
+      <div class="tcheck ${t.done?'done':''}" onclick="toggleChecklist(${i})"></div>
+      <span class="ttext ${t.done?'struck':''}">
+        <span style="font-size:11px;font-weight:700;color:var(--soft);margin-right:4px">${tipoLabel[t.tipo]||''}</span>
+        ${t.t}
+      </span>
+    </div>`).join('')}
+  </div>`;
+}
+
+function toggleChecklist(i) {
+  window._checklistTasks[i].done = !window._checklistTasks[i].done;
+  renderChecklist();
+}
+
+function salvarDia() {
+  const tasks = window._checklistTasks || [];
+  const doneCnt = tasks.filter(t=>t.done).length;
+  if (!S.dia) S.dia = {entries:[]};
+  S.dia.entries.push({
+    data: new Date().toISOString(),
+    briefing: window._briefingTxt || '',
+    tasks: tasks.map(t=>({...t})),
+    total: tasks.length,
+    concluidas: doneCnt
+  });
+  save();
+  alert(`💙 Dia salvo! ${doneCnt} de ${tasks.length} atividades concluídas.`);
+  renderHist();
+}
+
+// ── HISTÓRICO — patch to include dia stats ────────────
+const _renderHistOrig = renderHist;
+renderHist = function() {
+  _renderHistOrig();
+  // Append dia history after habits history
+  const el = document.getElementById('tab-hist');
+  const entries = (S.dia && S.dia.entries) ? S.dia.entries : [];
+  if (!entries.length) return;
+
+  // Compute stats
+  const hoje = new Date();
+  const startOfDay = d => { const x=new Date(d); x.setHours(0,0,0,0); return x; };
+  const startOfWeek = () => { const d=new Date(); d.setDate(d.getDate()-d.getDay()); d.setHours(0,0,0,0); return d; };
+  const startOfMonth = () => new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const startOfYear = () => new Date(hoje.getFullYear(), 0, 1);
+
+  const count = (from) => entries.filter(e => new Date(e.data) >= from).reduce((a,e) => a + e.concluidas, 0);
+  const diaCount  = entries.filter(e => startOfDay(e.data).getTime() === startOfDay(hoje).getTime()).reduce((a,e)=>a+e.concluidas,0);
+  const semCount  = count(startOfWeek());
+  const mesCount  = count(startOfMonth());
+  const anoCount  = count(startOfYear());
+
+  const section = document.createElement('div');
+  section.innerHTML = `
+  <div class="sec-head" style="margin-top:28px">⚡ Histórico — Meu dia</div>
+  <div class="stats" style="margin-bottom:16px">
+    <div class="stat"><div class="stat-n">${diaCount}</div><div class="stat-l">Hoje</div></div>
+    <div class="stat"><div class="stat-n">${semCount}</div><div class="stat-l">Semana</div></div>
+    <div class="stat"><div class="stat-n">${mesCount}</div><div class="stat-l">Mês</div></div>
+  </div>
+  <div class="stats" style="margin-bottom:20px">
+    <div class="stat" style="grid-column:span 3"><div class="stat-n">${anoCount}</div><div class="stat-l">Atividades concluídas no ano 🎯</div></div>
+  </div>
+  ${entries.slice().reverse().slice(0,10).map(e => {
+    const d = new Date(e.data).toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
+    const pct = e.total ? Math.round(e.concluidas/e.total*100) : 0;
+    const bc = pct>=80?'#6de8a8':pct>=40?'#ffd070':'#ffaacc';
+    return `<div class="hist-entry" style="border-left-color:${bc}">
+      <div class="hist-date">${d}</div>
+      <div class="hist-text">✅ ${e.concluidas} de ${e.total} atividades concluídas (${pct}%)</div>
+    </div>`;
+  }).join('')}`;
+  el.appendChild(section);
+};
+
+renderNova();
+</script>
+</body>
+</html>
